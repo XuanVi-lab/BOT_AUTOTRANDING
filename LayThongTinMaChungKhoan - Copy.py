@@ -1,19 +1,18 @@
 
 
-
+from vnstock import Company, Listing
+import ssi_fc_data.fc_md_client as fc
+import warnings
 from ssi_fc_data import fc_md_client, model
 import pandas as pd
 import time
 import os
 import config  # Đảm bảo đã có file config.py trong thư mục
 print("⚙️ Loại config:", type(config))
-from vnstock import  Company,Listing
 
 
-import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-import ssi_fc_data.fc_md_client as fc
 print(fc.__file__)
 # Xoá màn hình nếu đang chạy trong terminal
 os.system('cls' if os.name == 'nt' else 'clear')
@@ -24,12 +23,13 @@ os.system('cls' if os.name == 'nt' else 'clear')
 client = fc_md_client.MarketDataClient(config)
 
 # Hàm lấy dữ liệu một sàn
+
+
 def get_market_data(market):
     req = model.securities(market, 1, 1000)
     res = client.securities(config, req)
     data = res.get("data", [])
-    
-    
+
     print(f"📦 Số lượng item trả về từ {market}: {len(data)}")
     if data:
         sample = data[0]
@@ -39,9 +39,7 @@ def get_market_data(market):
         print("⚠️ Không có dữ liệu trong phản hồi.")
     # for item in data[:5]:  # in thử vài dòng đầu
     #     print(item)
-    
-    
-    
+
     rows = []
 
     for item in data:
@@ -60,6 +58,7 @@ def get_market_data(market):
             })
 
     return rows
+
 
 # Lấy và kết hợp dữ liệu từ 3 sàn
 all_data = []
@@ -107,7 +106,7 @@ print("📁 Đã lưu file: DanhSach_CoPhieu_SSI.xlsx")
 #     'organ_name',  # tên công ty tiếng Việt
 #     'icb_name3', 'icb_name2', 'icb_name4',
 #     'financial_ratio_issue_share', 'charter_capital', 'exchange'
-# ]].rename(columns={ 
+# ]].rename(columns={
 #     'symbol': 'Mã cổ phiếu',
 #     'organ_name': 'Tên công ty (VN)',
 #     'icb_name3': 'Ngành cấp 3',
@@ -142,7 +141,7 @@ results = []
 
 # for symbol in symbols:
 for symbol in df_ssi['symbol'].tolist()[:50]:
-# for symbol in df_ssi['symbol'].tolist():
+    # for symbol in df_ssi['symbol'].tolist():
     try:
         company = Company(symbol=symbol, source='VCI')
         info = company.overview()
@@ -159,7 +158,7 @@ if results:
     df_merged = pd.merge(df_ssi, df_vnstock, on='symbol', how='right')
 
     # Đổi tên và chọn cột
-    df_final = df_merged[[ 
+    df_final = df_merged[[
         'symbol', 'name_vn', 'name_en',  'exchange',
         'icb_name2', 'icb_name3', 'icb_name4',
         'issue_share', 'charter_capital', 'financial_ratio_issue_share'
