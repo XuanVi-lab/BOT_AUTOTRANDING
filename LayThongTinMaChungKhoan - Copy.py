@@ -1,13 +1,16 @@
 
 
-from vnstock import Company, Listing
-import ssi_fc_data.fc_md_client as fc
-import warnings
-from ssi_fc_data import fc_md_client, model
-import pandas as pd
-import time
 import os
+import time
+import warnings
+
+import pandas as pd
+import ssi_fc_data.fc_md_client as fc
+from ssi_fc_data import fc_md_client, model
+from vnstock import Company, Listing
+
 import config  # Đảm bảo đã có file config.py trong thư mục
+
 print("⚙️ Loại config:", type(config))
 
 
@@ -140,10 +143,11 @@ df_ssi = pd.read_excel("d:\\DanhSach_CoPhieu_SSI.xlsx")
 results = []
 
 # for symbol in symbols:
-for symbol in df_ssi['symbol'].tolist()[:50]:
+for symbol in df_ssi['symbol'].tolist()[:5]:
     # for symbol in df_ssi['symbol'].tolist():
     try:
-        company = Company(symbol=symbol, source='VCI')
+        # company = Company(symbol=symbol, source='VCI')
+        company = Company(symbol=symbol, source='VCI', verify=False)
         info = company.overview()
         results.append(info)
         print(f"✅ {symbol} OK")
